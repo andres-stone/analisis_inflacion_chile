@@ -35,25 +35,25 @@ tpm <- "tpm.xlsx"
 
 ```{r echo=FALSE, results=FALSE, message=FALSE, warning=FALSE}
 # Librerias
-if (!require("tidyverse")) install.packages("tidyverse"); library(tidyverse)
-if (!require("ggplot2")) install.packages("ggplot2"); library(ggplot2)
-if (!require("readxl")) install.packages("readxl"); library(readxl)
-if (!require("gganimate")) install.packages("gganimate"); library(gganimate)
-if (!require("gapminder")) install.packages("gapminder"); library(gapminder)
-if (!require("gifski")) install.packages("gifski"); library(gifski)
-if (!require("plotly")) install.packages("plotly"); library(plotly)
-if (!require("reshape2")) install.packages("reshape2"); library(reshape2)
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+library(gganimate)
+library(gapminder)
+library(gifski)
+library(plotly)
+library(reshape2)
 ```
 
 ```{r echo=FALSE, results=FALSE, message=FALSE, warning=FALSE}
 # Inflación variación anual 12 meses
-pi <- read_excel(paste0("../inflation_animate/datos/",pi)) %>%
+pi <- read_excel(paste0("datos/",pi)) %>%
   janitor::clean_names()
 pi <- pi[-1,c(1:2)]
 colnames(pi) <- c('Periodo', 'IPC')
 
 # Tasa de Politica Monetaria Mensual
-tpm <- read_excel(paste0("../inflation_animate/datos/",tpm)) %>%
+tpm <- read_excel(paste0("datos/",tpm)) %>%
   janitor::clean_names()
 tpm <- tpm[-1,c(1:2)]
 colnames(tpm) <- c('Periodo', 'TPM')
