@@ -24,9 +24,9 @@ rm(list = ls())
 memory.size(max = T)
 
 # Actualizar parametros
-mm1 <- "diciembre"
-mm2 <- 12
-yy  <- "2021"
+mm1 <- "enero"
+mm2 <- "1"
+yy  <- "2022"
 
 # Nombre bases de datos
 pi  <- "pi.xlsx"
@@ -101,7 +101,7 @@ abs_l_pi  <- abs(l_pi)
 abs_l_tpm <- abs(l_tpm)
 ```
 
-Para `r mm1`la inflación anual del IPC `r ll_pi` `r l_pi`% interanualmente, mientras que la tasa de interés de política monetaria se ubica en `r l_tpm`% para el mes mencionado.
+Para `r mm1` la inflación anual del IPC `r ll_pi` `r l_pi`% interanualmente, mientras que la tasa de interés de política monetaria se ubica en `r l_tpm`%.
 
 ```{r echo=FALSE, results=FALSE, message=FALSE, warning=FALSE}
 plot_pi_tpm <- ggplot() + 
