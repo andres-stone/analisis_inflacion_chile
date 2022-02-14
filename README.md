@@ -1,2 +1,1 @@
-# inflation_animate
- Tasa de inflación comparada con tasa de interés de política monetaria de forma animada (.gif)
+Tasa de inflación mensual versus tasa de política monetaría para Chile 2020m1 - 2022m1 de forma animada (.gif), además, presentación html de variación de divisiones/productos de la canasta básica del IPC, junto con indicadores y expectativas económicas.
