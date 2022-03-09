@@ -1,0 +1,6 @@
+"0","# Presentando tabla"
+"0","tab <- d_ipc %>%"
+"0","  select(glosa, ponderacion, indice, var_mensual, var_acumulada, var_12_meses, inc_mensual, inc_12_meses)"
+"0","colnames(tab) <- c(""División"", ""Ponderación"",  ""Índice"", ""Variación mensual"", ""Variación acumulada"", ""Variación 12 meses"","
+"0","                   ""Incidencia mensual"", ""Incidencia 12 meses"")"
+"0","tab"

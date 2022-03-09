@@ -1,0 +1,39 @@
+"0","q <- ipc_tpm_long %>% 
+  ggplot(aes(x = Periodo, y = value, col = variable)) +
+  geom_line(linetype = 'solid') +
+  labs(x='', y = 'Porcentaje (%)',
+       title = 'Inflación y Tasa de política monetaria',
+       subtitle = paste0(""enero 2008 - "",mm1,"" "", yy),
+       caption = 'Fuente: Elaboración propia utilizando datos del INE y BCCh.') +
+  transition_reveal(reveal_time) +
+  scale_y_continuous(breaks = scales::breaks_width(2)) +
+  scale_x_date(date_breaks = ""3 months"",
+               limits = c(min(ipc_tpm_long$Periodo),
+                          max = max(ipc_tpm_long$Periodo))) + 
+               #date_labels = ""%Y"") + 
+  scale_color_manual(name = ""Variables""
+                     ,labels = c(""IPC total"", ""TPM"")
+    ,values = c('royalblue3','orangered3')) + 
+  theme_light() + 
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.y = element_line(linetype=""dashed""),
+        panel.grid.minor.y = element_line(linetype=""dashed""),
+        legend.position = ""bottom"",
+        legend.justification = ""center"",
+        plot.caption = element_text(hjust = 0),
+        plot.title = element_text(colour = ""blue4"", hjust = 0.5),
+        plot.subtitle = element_text(colour = ""blue4"",hjust = 0.5),
+        legend.title = element_text(colour = NA),
+        panel.background = element_rect(fill = NA),
+        plot.background = element_rect(fill = ""white"",colour = NA),
+        legend.background = element_rect(fill = ""white""),
+        legend.direction = ""horizontal"",
+        legend.key = element_rect(fill=""white""),
+        axis.text.x   = element_text(colour = ""grey0""
+                                      ,size = 8, angle = 90
+                                      ,hjust = 1, vjust = 1))
+"
+"2","Error in ggplot(., aes(x = Periodo, y = value, col = variable)) : 
+  object 'ipc_tpm_long' not found
+"
