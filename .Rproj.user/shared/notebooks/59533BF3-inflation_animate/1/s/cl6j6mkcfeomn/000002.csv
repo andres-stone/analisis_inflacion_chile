@@ -2,13 +2,13 @@
 "0","rm(list = ls())"
 "0","memory.size(max = T)"
 "1","[1]"
-"1"," 187.38"
+"1"," 132.06"
 "1","
 "
 "0","# Actualizar parametros"
-"0","mm1 <- ""febrero"""
-"0","mm2 <- ""2"""
-"0","mm3 <- ""enero"" # Mes anterior"
+"0","mm1 <- ""marzo"""
+"0","mm2 <- ""3"""
+"0","mm3 <- ""febrero"" # Mes anterior"
 "0","yy  <- ""2022"""
 "0",""
 "0","# Nombre bases de datos"
@@ -18,7 +18,7 @@
 "2","trying URL 'https://www.ine.cl/docs/default-source/%C3%ADndice-de-precios-al-consumidor/cuadros-estadisticos/base-2018/series-de-tiempo/ipc.xls.xlsx?sfvrsn=c73e33d4_10'
 "
 "2","Content type 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'"
-"2"," length 2082919 bytes (2.0 MB)
+"2"," length 2141837 bytes (2.0 MB)
 "
 "2","downloaded 2.0 MB
 

@@ -1,0 +1,15 @@
+"0","# Asignando show_time & reveal_time
+ipc_tpm <- ipc_tpm  %>% 
+  mutate(show_time = ifelse((Y == 2021 & m %in% c(3:12)) 
+                            | Y == 2022, 30, 10),
+         show_time = ifelse(ano == yy & mes == mm2,100,show_time),
+         reveal_time = cumsum(show_time))
+"
+"1","[1m[33mError[39m in [38;5;252m[38;5;251m[48;5;235m`mutate()`[49m[38;5;252m[39m:[22m
+[38;5;252m[33m![38;5;252m Problem while computing `show_time = ifelse(ano == yy & mes == mm2, 100, show_time)`.[39m
+[1mCaused by error in [38;5;252m[38;5;251m[48;5;235m`ifelse()`[49m[38;5;252m[39m:[22m
+[33m![39m object 'ano' not found
+Backtrace:
+[90m 1. [39mipc_tpm %>% ...
+[90m 7. [39m[1mbase[22m::ifelse(ano == yy & mes == mm2, 100, show_time)
+"
