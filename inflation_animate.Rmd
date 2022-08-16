@@ -24,19 +24,16 @@ rm(list = ls())
 memory.size(max = T)
 
 # Actualizar parametros
-mm1 <- "marzo"
-mm2 <- "3"
-mm3 <- "febrero" # Mes anterior
+mm1 <- "julio"
+mm2 <- "7"
+mm3 <- "junio" # Mes anterior
 yy  <- "2022"
 
-# Nombre bases de datos
+# Inflación 
 url <- "https://www.ine.cl/docs/default-source/%C3%ADndice-de-precios-al-consumidor/cuadros-estadisticos/base-2018/series-de-tiempo/ipc.xls.xlsx?sfvrsn=c73e33d4_10"
 dest <- "datos/pi.xlsx"
 download.file(url=url,destfile = dest,mode = "wb")
 
-#url_tpm <- "https://si3.bcentral.cl/Siete/ES/Siete/Cuadro/CAP_TASA_INTERES/MN_TASA_INTERES_09/TPM_C1?cbFechaDiaria=1995&cbFrecuencia=MONTHLY&cbCalculo=NONE&cbFechaBase="
-#dest_tpm <- "datos/tpm1.xlsx"
-#download.file(url = url_tpm, destfile = dest_tpm, mode = "wb")
 pi  <- "pi.xlsx"
 tpm <- "tpm.xlsx"
 EEE <- "EEE.xlsx"
@@ -51,8 +48,8 @@ library(readxl)
 library(gganimate)
 library(gapminder)
 library(gifski)
-library(plotly)
 library(reshape2)
+library(lubridate)
 
 firstup <- function(x) {
   substr(x, 1, 1) <- toupper(substr(x, 1, 1))
@@ -114,11 +111,6 @@ ipc_tpm_long <- ipc_tpm %>%
   select(Periodo, var_12_meses, TPM, reveal_time) %>%
   melt(id.vars = c("Periodo", "reveal_time"))
 
-#ipc_tpm_long$Periodo <- gsub('T00:00:00.0000000','', pi_tpm_long$Periodo)
-#pi_tpm_long$Y       <- as.numeric(substr(pi_tpm_long$Periodo,1,4))
-#pi_tpm_long$m       <- as.numeric(substr(pi_tpm_long$Periodo, 6,7))
-#pi_tpm_long$Periodo <- as.Date(pi_tpm_long$Periodo, format = '%Y-%m-%d')
-
 # Datos
 l_pi_tpm <- ipc_tpm %>%
   filter(Y == yy & m == mm2)
@@ -127,7 +119,7 @@ l_tpm <- l_pi_tpm$TPM
 l_ipc_m <- l_pi_tpm$var_mensual
 
 # Llave
-ll_pi  <- ifelse(l_pi > 0, "aumentó", "disminuyó")
+ll_pi  <- ifelse(l_pi > 0, "un incremento", "una disminución")
 
 # Valor absoluto para llave
 abs_l_pi  <- abs(l_pi)
@@ -136,44 +128,55 @@ abs_l_tpm <- abs(l_tpm)
 
 # Evolución del IPC y de la TPM
 
-En `r mm1` de `r yy` el índice de precios al consumidor (IPC) anotó una variación mensual de `r l_ipc_m`%, y un `r ll_pi` a doce meses de `r l_pi`%, mientras que la tasa de interés de política monetaria se ubica en `r l_tpm`%.
+En `r mm1` de `r yy` el índice de precios al consumidor (IPC) anotó una variación mensual de `r format(round(l_ipc_m,1),decimal.mark=",",nsmall=1)`%, y `r ll_pi` a doce meses de `r format(round(l_pi,1),decimal.mark=",", nsmall = 1)`%, mientras que la tasa de interés de política monetaria se ubica en `r format(l_tpm,decimal.mark=",", nsmall = 1)`%.
 
-```{r echo=FALSE, results=FALSE, message=FALSE, warning=FALSE}
-plot_ipc_tpm <- ggplot() + 
-  geom_line(data = ipc_tpm,
-            aes(x = Periodo, var_12_meses, group = 1, color = "IPC Total")) + 
-  geom_line(data = ipc_tpm,
-            aes(x = Periodo, TPM, group = 1, color = "Tasa de Política Monetaria")) +
-  scale_color_manual("", values = c("IPC Total"                  = "royalblue3",
-                                    "Tasa de Política Monetaria" = "orangered3")) + 
-  theme_light() + 
-  labs(x = NULL, y = "Porcentaje (%)",
+```{r echo=FALSE,results=FALSE, message=FALSE, warning=FALSE}
+# format(round(ir_general_var_interanual, digits=1),decimal.mark=",", nsmall = 1)
+ipc_tpm <- ipc_tpm %>% 
+  mutate(fecha = ymd(paste(Y,m,"01",sep="-")))
+
+plot_ipc_tpm <- ipc_tpm %>% 
+  ggplot(aes(x=fecha)) + 
+  geom_line(aes(y=var_12_meses, group=1, color = "Variación IPC (%) 12 meses")) +
+  geom_line(aes(y=TPM, group=1, color = "TPM"))+
+  theme_bw() +
+  labs(x=NULL, 
+       y = "Porcentaje (%)",
        title = "Inflación y Tasa de Política Monetaria",
-       subtitle = paste0("enero 2020 - ",mm1," ",yy),
-       caption = "Fuente: Elaboración propia utilizando datos del INE y del BCCh") + 
-  scale_y_continuous(limits = c(0,10))+#,breaks = c(0:10)
-  scale_x_date(limits = c(min(ipc_tpm$Periodo),
-                          max = max(ipc_tpm$Periodo)),
-               date_breaks = "3 months") + 
-  theme(panel.grid.major.x = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        panel.grid.major.y = element_line(linetype="dashed"),
-        panel.grid.minor.y = element_line(linetype="dashed"),
-        legend.position = "bottom",
-        legend.justification = "center",
-        plot.caption = element_text(hjust = 0),
-        plot.title = element_text(colour = "blue4", hjust = 0.5),
-        plot.subtitle = element_text(colour = "blue4",hjust = 0.5),
-        legend.title = element_text(colour = NA),
-        panel.background = element_rect(fill = NA),
-        plot.background = element_rect(fill = "white",colour = NA),
-        legend.background = element_rect(fill = "white"),
-        legend.direction = "horizontal",
-        legend.key = element_rect(fill="white"),
-        axis.text.x   = element_text(colour = "grey0"
-                                      ,size = 8, angle = 90
-                                      ,hjust = 1, vjust = 1))
-
+       subtitle = paste0("febrero 2020 - ",mm1," ",yy),
+       caption  = "Elaboración propia utilizando datos del INE y del BCCh"
+       ) + 
+  scale_x_date(date_breaks = "2 months", 
+               limits = c(min(ipc_tpm$fecha), 
+                          max = max(ipc_tpm$fecha) %m+% months(1)),
+               expand=c(0,0),
+               labels = function(x) if_else(is.na(lag(x)) | !year(lag(x)) == year(x), 
+                                            paste(month(x, label = TRUE), "\n", year(x)), 
+                                            paste(month(x, label = TRUE)))) + 
+  scale_colour_manual(" ", values=c("Variación IPC (%) 12 meses" = "red", 
+                                    "TPM"= "blue2"))+
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_line(linetype="dashed"),
+    panel.grid.minor.y = element_line(linetype="dashed"),
+    legend.position="top",
+    legend.justification="center",
+    plot.caption = element_text(hjust = 0,
+                                family = "GloberBold",
+                                size=8),
+    # axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    plot.title = element_text(colour = "#0d1999",
+                                family = "GloberBold", 
+                                face = "bold",
+                              size=14),
+    legend.title = element_text(colour = NA),
+    panel.background = element_rect(fill = NA),
+    plot.background = element_rect(fill = "white",
+                                   colour = NA),
+    axis.text.x = element_text(size = 7,hjust = 0.7), 
+    legend.background = element_rect(fill = "white"),
+    legend.direction = "horizontal")
 
 ggsave(
   plot = plot_ipc_tpm,
@@ -182,10 +185,12 @@ ggsave(
   dpi = "retina",
   units = "cm",width = 30,height = 15
 )
-
-plot_ipc_tpm
 ```
 
+```{r, out.width = "100%", fig.pos="h", fig.align="center", echo=FALSE}
+a<-paste0("graficos/pi_tpm.png")
+knitr::include_graphics(a)
+```
 
 ```{r echo=FALSE, results=FALSE, message=FALSE, warning=FALSE}
 # Informacion último mes
@@ -224,7 +229,7 @@ ll_inc_pos <- case_when(inc_pos == "1" ~ "una", inc_pos == "2" ~ "dos",
                         inc_pos == "3" ~ "tres", inc_pos == "4" ~ "cuatro",
                         inc_pos == "5" ~ "cinco", inc_pos == "6" ~ "seis",
                         inc_pos == "7" ~ "siete", inc_pos == "8" ~ "ocho",
-                        inc_pos == "9" ~ "nueve", inc_pos == "9" ~ "nueve",
+                        inc_pos == "9" ~ "nueve", inc_pos == "10" ~ "diez",
                         inc_pos == "11" ~ "once", inc_pos == "12" ~ "doce")
 ll_inc_neg <- case_when(inc_neg == "1" ~ "una", inc_neg == "2" ~ "dos",
                         inc_neg == "3" ~ "tres", inc_neg == "4" ~ "cuatro",
@@ -257,20 +262,21 @@ inc_tot     <- inc_tot*-1
 
 # Variaciones e Incidencias por división
 
-En `r mm1`, `r ll_inc_pos` de las doce divisiones que conforman la canasta del IPC aportaron incidentias positivas en la variación mensual del índice y `r ll_inc_neg` presentarón incidencia negativa. Entre las divisiones con aumentos de sus precios destacó `r glosa1` (`r var_mensual1`) con `r pp1` puntos porcentuales (pp.) y `r glosa2` (`r var_mensual2`) con `r pp2`pp. Las restantes divisiones influyeron positivamente contribuyeron con `r inc_tot`pp., en conjunto.
+En `r mm1`, `r ll_inc_pos` de las doce divisiones que conforman la canasta del IPC aportaron incidencias positivas en la variación mensual del índice y `r ll_inc_neg` presentarón incidencia negativa. Entre las divisiones con mayor aumento de precios destacó `r glosa1` (`r format(round(var_mensual1,1),decimal.mark=",", nsmall = 1)`%) con `r format(pp1,decimal.mark=",", nsmall = 3)` puntos porcentuales (pp.) y `r glosa2` (`r format(var_mensual2,decimal.mark=",", nsmall = 1)`%) con `r format(pp2,decimal.mark=",", nsmall = 3)` pp.
 
-```{r echo=FALSE,  warning=FALSE}
+```{r echo=FALSE}
 # Presentando tabla
-tab <- d_ipc %>%
+d_ipc %>%
   select(glosa, ponderacion, indice, var_mensual, var_acumulada, var_12_meses, inc_mensual, inc_12_meses) %>%
   knitr::kable(col.names = c("División", "Ponderación", "Índice", "Variación mensual", 
                              "Variación acumulada", "Variación 12 meses", 
                              "Incidencia mensual", "Incidencia 12 meses"),
                align = "lccccccc",
                caption = paste0("IPC Total ",mm1," ",yy),
-               "html") #%>%
-  #kableExtra::row_spec(1, bold = T, italic = T)
-tab
+               "html") %>%
+  kableExtra::row_spec(0, bold = T) %>% #, italic = T
+  kableExtra::kable_classic(full_width = F, 
+    html_font = "Helvetica", font_size = 14)
 ```
 
 ```{r echo=FALSE, results=FALSE, message=FALSE, warning=FALSE}
@@ -353,16 +359,15 @@ ll_31 <- ifelse(r11 >= .5, "aumentos", "disminuciones")
 
 + División `r d1` de `r glosa1`
 
-`r firstup(glosa1)` anoto `r ll_11` mensuales en `r n11` de sus `r n1` clases. La más importante fue `r glosa11`(`r var_m_11`%) que incidió `r inc_m_11`pp., mientras que `r glosa12`(`r var_m_12`%) contribuyó `r inc_m_12`pp.
+`r firstup(glosa1)` anoto `r ll_11` mensuales en `r n11` de sus `r n1` clases. La más importante fue `r glosa11`(`r format(var_m_11,decimal.mark=",", nsmall = 1)`%) que incidió `r format(inc_m_11,decimal.mark=",", nsmall = 3)` pp., mientras que `r glosa12`(`r format(var_m_12,decimal.mark=",", nsmall = 1)`%) contribuyó `r format(inc_m_12,decimal.mark=",", nsmall = 3)` pp.
 
 + División `r d2` de `r glosa2`
 
-`r firstup(glosa2)` consignó `r ll_21` mensuales en `r n21` de sus `r n2` clases. La más importante fue `r glosa21`(`r var_m_21`%) que aportó `r inc_m_21`pp., seguida de `r glosa22`(`r var_m_22`%) con `r inc_m_22`pp.
+`r firstup(glosa2)` consignó `r ll_21` mensuales en `r n21` de sus `r n2` clases. La más importante fue `r glosa21`(`r format(var_m_21,decimal.mark=",", nsmall = 1)`%) que aportó `r format(inc_m_21,decimal.mark=",", nsmall = 3)`pp., seguida de `r glosa22`(`r format(var_m_22,decimal.mark=",", nsmall = 1)`%) con `r format(inc_m_22,decimal.mark=",", nsmall = 3)`pp.
 
 + División `r d3` de `r glosa3`
 
-`r firstup(glosa3)` registró `r ll_31` mensuales en `r n31` de sus `r n3` clases. La más importante fue `r glosa31`(`r var_m_31`%) que aportó `r inc_m_31`pp., seguida de `r glosa32`(`r var_m_32`%) con `r inc_m_32`pp.
-
+`r firstup(glosa3)` registró `r ll_31` mensuales en `r n31` de sus `r n3` clases. La más importante fue `r glosa31`(`r format(var_m_31,decimal.mark=",", nsmall = 1)`%) que aportó `r format(inc_m_31,decimal.mark=",", nsmall = 1)`pp., seguida de `r glosa32`(`r format(var_m_32,decimal.mark=",", nsmall = 1)`%) con `r format(inc_m_32,decimal.mark=",", nsmall = 3)`pp.
 
 # Productos
 
@@ -420,27 +425,27 @@ doc_prod6 <- ipc_prod_6$var_12_meses[6]
 
 + `r firstup(tolower(prod1))`
 
-En `r mm1` presentó un `r ll_prod1` mensual de `r var_prod1`%, aportando `r inc_prod1`pp. a la variacion del indicador general. Acumuló `r acu_prod1`% al tercer mes del año y `r doc_prod1`% a doce meses.
+En `r mm1` presentó un `r ll_prod1` mensual de `r format(var_prod1,decimal.mark=",", nsmall = 1)`%, aportando `r format(inc_prod1,decimal.mark=",", nsmall = 3)` pp. a la variación del indicador general. Acumuló `r format(acu_prod1,decimal.mark=",", nsmall = 1)`% al tercer mes del año y `r format(doc_prod1,decimal.mark=",", nsmall = 1)`% a doce meses.
 
 + `r firstup(tolower(prod2))`
 
-Anotó un `r ll_prod2` mensual de `r var_prod2`%, con una incidencia de `r inc_prod2`pp., y variaciones de `r acu_prod2`% y de `r doc_prod2`% a doce meses.
+Anotó un `r ll_prod2` mensual de `r format(var_prod2,decimal.mark=",", nsmall = 1)`%, con una incidencia de `r format(inc_prod2,decimal.mark=",", nsmall = 3)` pp., y variaciones de `r format(acu_prod2,decimal.mark=",", nsmall = 1)`% y de `r format(doc_prod2,decimal.mark=",", nsmall = 1)`% a doce meses.
 
 + `r firstup(tolower(prod3))`
 
-Registró un `r ll_prod3` mensual de `r var_prod3`% con `r inc_prod3`pp., acumulando `r acu_prod3`% en lo que va del año y `r doc_prod3`% a doce meses.
+Registró un `r ll_prod3` mensual de `r format(var_prod3,decimal.mark=",", nsmall = 1)`% con `r format(inc_prod3,decimal.mark=",", nsmall = 1)` pp., acumulando `r format(acu_prod3,decimal.mark=",", nsmall = 1)`% en lo que va del año y `r format(doc_prod3,decimal.mark=",", nsmall = 1)`% a doce meses.
 
 + `r firstup(tolower(prod4))`
 
-Consignó un `r ll_prod4` mensual de `r var_prod4`%, con `r inc_prod4`pp., acumulando `r acu_prod4`% en lo que va del año y `r doc_prod4`% a doce meses.
+Consignó un `r ll_prod4` mensual de `r format(var_prod4,decimal.mark=",", nsmall = 1)`%, con `r format(inc_prod4,decimal.mark=",", nsmall = 3)` pp., acumulando `r format(acu_prod4,decimal.mark=",", nsmall = 1)`% en lo que va del año y `r format(doc_prod4,decimal.mark=",", nsmall = 1)`% a doce meses.
 
 + `r firstup(tolower(prod5))`
 
-Consigno un `r ll_prod5` mensual de `r var_prod5`%, con una incidencia de `r inc_prod5`pp., registrando una variación de `r acu_prod5`% en lo que va del año y de `r doc_prod5`% a doce meses
+Consigno un `r ll_prod5` mensual de `r format(var_prod5,decimal.mark=",", nsmall = 1)`%, con una incidencia de `r format(inc_prod5,decimal.mark=",", nsmall = 1)` pp., registrando una variación de `r format(acu_prod5,decimal.mark=",", nsmall = 1)`% en lo que va del año y de `r format(doc_prod5,decimal.mark=",", nsmall = 1)`% a doce meses
 
 + `r firstup(tolower(prod6))`
 
-Registró una `r ll_prod6` mensual de `r var_prod6`%, con `r inc_prod6`pp., acumulando `r acu_prod6`% en lo que va del año y `r doc_prod6`% a doce meses.
+Registró una `r ll_prod6` mensual de `r format(var_prod6)`%, con `r format(inc_prod6,decimal.mark=",", nsmall = 1)` pp., acumulando `r format(acu_prod6,decimal.mark=",", nsmall = 1)`% en lo que va del año y `r format(doc_prod6,decimal.mark=",", nsmall = 1)`% a doce meses.
 
 ```{r echo=FALSE, results=FALSE, message=FALSE, warning=FALSE}
 t  <- ipc$Periodo[nrow(ipc)]
@@ -451,9 +456,86 @@ prod_graf <- pi %>%
   filter(!is.na(p))
 ```
 
+# Evolución del Salario Real y la Inflación en doce meses
 
+```{r echo=FALSE,results=FALSE, message=FALSE, warning=FALSE}
+w <- read_excel(paste0("datos/w_real.xls"),
+                skip=5) %>% 
+  janitor::clean_names()
 
-# Indicadores de inflación
+w <- w %>% 
+  mutate(ano = as.numeric(ano),
+         mes = as.numeric(mes),
+         variacion_a_12_meses = as.numeric(variacion_a_12_meses),
+         fecha = ymd(paste(ano,mes,"01",sep=","))) %>% 
+  select(7,6) %>% 
+  filter(!is.na(variacion_a_12_meses))
+```
+
+```{r echo=FALSE,results=FALSE, message=FALSE, warning=FALSE}
+w_ipc <- w %>% inner_join(ipc_tpm,by="fecha") %>% 
+  select(fecha,variacion_a_12_meses,var_12_meses,TPM)
+
+colnames(w_ipc) <- c("fecha","w_real","ipc","tpm")
+
+plot_w_ipc <- w_ipc %>% 
+  ggplot(aes(x=fecha)) + 
+  geom_line(aes(y=ipc, group=1, color = "Variación IPC (%) 12 meses")) +
+  geom_line(aes(y=w_real, group=1, color = "Salario Real"))+
+  theme_bw() +
+  labs(x=NULL, 
+       y = "Porcentaje (%)",
+       title = "Salario Real e IPC (%) en doce meses",
+       subtitle = paste0("febrero 2020 - ",mm3," ",yy),
+       caption  = "Elaboración propia utilizando datos del INE y del BCCh"
+       ) + 
+  scale_x_date(date_breaks = "2 months", 
+               limits = c(min(ipc_tpm$fecha), 
+                          max = max(ipc_tpm$fecha) %m+% months(1)),
+               expand=c(0,0),
+               labels = function(x) if_else(is.na(lag(x)) | !year(lag(x)) == year(x), 
+                                            paste(month(x, label = TRUE), "\n", year(x)), 
+                                            paste(month(x, label = TRUE)))) + 
+  scale_colour_manual(" ", values=c("Variación IPC (%) 12 meses" = "red", 
+                                    "Salario Real"= "blue2"))+
+  theme(
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.grid.major.y = element_line(linetype="dashed"),
+    panel.grid.minor.y = element_line(linetype="dashed"),
+    legend.position="top",
+    legend.justification="center",
+    plot.caption = element_text(hjust = 0,
+                                family = "GloberBold",
+                                size=8),
+    # axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+    plot.title = element_text(colour = "#0d1999",
+                                family = "GloberBold", 
+                                face = "bold",
+                              size=14),
+    legend.title = element_text(colour = NA),
+    panel.background = element_rect(fill = NA),
+    plot.background = element_rect(fill = "white",
+                                   colour = NA),
+    axis.text.x = element_text(size = 7,hjust = 0.7), 
+    legend.background = element_rect(fill = "white"),
+    legend.direction = "horizontal")
+
+ggsave(
+  plot = plot_w_ipc,
+  filename = "graficos/w_ipc.png",
+  device = "png",
+  dpi = "retina",
+  units = "cm",width = 30,height = 15
+)
+```
+
+```{r, out.width = "100%", fig.pos="h", fig.align="center", echo=FALSE}
+a<-paste0("graficos/w_ipc.png")
+knitr::include_graphics(a)
+```
+
+# Expectativas de inflación en las encuestas (*)
 
 ```{r echo=FALSE, results=FALSE, message=FALSE, warning=FALSE}
 # Encuesta de Expectativas Económicas
@@ -482,9 +564,7 @@ eof_12    <- EEE_EOF$eof_a_un_ano[n_eee_eof]
 eof_24    <- EEE_EOF$eof_a_dos_anos[n_eee_eof]
 ```
 
-# Expectativas de inflación en las encuestas (*)
-
-La Encuesta de Expectativas Económica (EEE) de diciembre, la Encuesta de Operadores Financieros (EOF) y los seguros de inflación la ubican entre `r eee_12`% y `r eof_12`% a doce meses. A dos años plazo, las compensaciones inflacionarias y las encuestas -EEE y EOF- se ubicaron hasta cifras entre `r eee_24`% y `r eof_24`%.
+La Encuesta de Expectativas Económica (EEE), la Encuesta de Operadores Financieros (EOF) y los seguros de inflación la ubican entre `r format(eee_12,decimal.mark=",", nsmall = 1)`% y `r format(eof_12,decimal.mark=",", nsmall = 1)`% a doce meses. A dos años plazo, las compensaciones inflacionarias y las encuestas -EEE y EOF- se ubicaron hasta cifras entre `r format(eee_24,decimal.mark=",", nsmall = 1)`% y `r format(eof_24,decimal.mark=",", nsmall = 1)`%.
 
 ```{r echo=FALSE, results=FALSE, message=FALSE, warning=FALSE}
 # Gráfica
@@ -526,11 +606,24 @@ plot_eee_eof <- ggplot() +
         legend.key = element_rect(fill="white"),
         axis.text.x   = element_text(colour = "grey0"
                                       ,size = 8, angle = 90
-                                      ,hjust = 1, vjust = 1));plot_eee_eof
+                                      ,hjust = 1, vjust = 1))
+
+ggsave(
+  plot = plot_eee_eof,
+  filename = "graficos/eee_eof.png",
+  device = "png",
+  dpi = "retina",
+  units = "cm",width = 30,height = 15
+)
+```
+
+```{r, out.width = "100%", fig.pos="h", fig.align="center", echo=FALSE}
+a<-paste0("graficos/eee_eof.png")
+knitr::include_graphics(a)
 ```
 
 (*) En el caso de la EOF, considera la encuesta de la primera quincena de cada mes hasta enero del 2018. Desde febrero de ese 
-año, considera la última encuesta publicada en el mes, incluyendo la previa a la Reunión de Política Monetaira de diciembre 2021. En los meses en los que no se publica encuesta, se considera la última encuesta disponible. En el caso de la EEE, considera la encuesta publicada en diciembre de 2021.
+año, considera la última encuesta publicada en el mes, incluyendo la previa a la Reunión de Política Monetaria de diciembre 2021. En los meses en los que no se publica encuesta, se considera la última encuesta disponible. En el caso de la EEE, considera la encuesta publicada en diciembre de 2021.
 
 ```{r echo=FALSE, results=FALSE, message=FALSE, warning=FALSE}
 q <- ipc_tpm_long %>% 
