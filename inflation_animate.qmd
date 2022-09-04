@@ -1,23 +1,12 @@
----
+--- 
 title: "Análisis Coyuntural de Chile"
-subtitle: "Andrés Durán S."
-author: "duransalgado.andres@gmail.com"
-date: '<span style = "font-size: 70%;">`r format(Sys.Date(), format = "%A %d de %B, %Y")`</span>'
-output:
-  html_document:
-    toc: true
-    toc_float: true
-    toc_depth: 2
-    toc-location: right
-    number_sections: true
+author: "Andrés Durán S.\nduransalgado.andres@gmail.com"
+format:
+  html:
     theme: journal
-    #df_print: paged
-# output:
-#   knitrBootstrap::bootstrap_document:
-#     title: "Test file"
-#     theme: journal
-#     highlight: sunburst
-#     menu: TRUE
+    toc: true
+    toc-title: "Tabla de Contenido"
+    number-sections: true
 ---
 
 ```{r setup, include=FALSE}
@@ -266,7 +255,6 @@ inc_tot     <- inc_tot[12]
 inc_tot     <- inc_tot*-1
 ```
 
-
 # Variaciones e Incidencias por división
 
 En `r mm1`, `r ll_inc_pos` de las doce divisiones que conforman la canasta del IPC aportaron incidencias positivas en la variación mensual del índice y `r ll_inc_neg` presentarón incidencia negativa. Entre las divisiones con mayor aumento de precios destacó `r glosa1` (`r format(round(var_mensual1,1),decimal.mark=",", nsmall = 1)`%) con `r format(pp1,decimal.mark=",", nsmall = 3)` puntos porcentuales (pp.) y `r glosa2` (`r format(var_mensual2,decimal.mark=",", nsmall = 1)`%) con `r format(pp2,decimal.mark=",", nsmall = 3)` pp.
@@ -364,15 +352,15 @@ ll_31 <- ifelse(r11 >= .5, "aumentos", "disminuciones")
 
 # Divisiones
 
-+ División `r d1` de `r glosa1`
+-   División `r d1` de `r glosa1`
 
 `r firstup(glosa1)` anoto `r ll_11` mensuales en `r n11` de sus `r n1` clases. La más importante fue `r glosa11`(`r format(var_m_11,decimal.mark=",", nsmall = 1)`%) que incidió `r format(inc_m_11,decimal.mark=",", nsmall = 3)` pp., mientras que `r glosa12`(`r format(var_m_12,decimal.mark=",", nsmall = 1)`%) contribuyó `r format(inc_m_12,decimal.mark=",", nsmall = 3)` pp.
 
-+ División `r d2` de `r glosa2`
+-   División `r d2` de `r glosa2`
 
 `r firstup(glosa2)` consignó `r ll_21` mensuales en `r n21` de sus `r n2` clases. La más importante fue `r glosa21`(`r format(var_m_21,decimal.mark=",", nsmall = 1)`%) que aportó `r format(inc_m_21,decimal.mark=",", nsmall = 3)`pp., seguida de `r glosa22`(`r format(var_m_22,decimal.mark=",", nsmall = 1)`%) con `r format(inc_m_22,decimal.mark=",", nsmall = 3)`pp.
 
-+ División `r d3` de `r glosa3`
+-   División `r d3` de `r glosa3`
 
 `r firstup(glosa3)` registró `r ll_31` mensuales en `r n31` de sus `r n3` clases. La más importante fue `r glosa31`(`r format(var_m_31,decimal.mark=",", nsmall = 1)`%) que aportó `r format(inc_m_31,decimal.mark=",", nsmall = 1)`pp., seguida de `r glosa32`(`r format(var_m_32,decimal.mark=",", nsmall = 1)`%) con `r format(inc_m_32,decimal.mark=",", nsmall = 3)`pp.
 
@@ -430,27 +418,27 @@ acu_prod6 <- ipc_prod_6$var_acumulada[6]
 doc_prod6 <- ipc_prod_6$var_12_meses[6]
 ```
 
-+ `r firstup(tolower(prod1))`
+-   `r firstup(tolower(prod1))`
 
 En `r mm1` presentó un `r ll_prod1` mensual de `r format(var_prod1,decimal.mark=",", nsmall = 1)`%, aportando `r format(inc_prod1,decimal.mark=",", nsmall = 3)` pp. a la variación del indicador general. Acumuló `r format(acu_prod1,decimal.mark=",", nsmall = 1)`% al tercer mes del año y `r format(doc_prod1,decimal.mark=",", nsmall = 1)`% a doce meses.
 
-+ `r firstup(tolower(prod2))`
+-   `r firstup(tolower(prod2))`
 
 Anotó un `r ll_prod2` mensual de `r format(var_prod2,decimal.mark=",", nsmall = 1)`%, con una incidencia de `r format(inc_prod2,decimal.mark=",", nsmall = 3)` pp., y variaciones de `r format(acu_prod2,decimal.mark=",", nsmall = 1)`% y de `r format(doc_prod2,decimal.mark=",", nsmall = 1)`% a doce meses.
 
-+ `r firstup(tolower(prod3))`
+-   `r firstup(tolower(prod3))`
 
 Registró un `r ll_prod3` mensual de `r format(var_prod3,decimal.mark=",", nsmall = 1)`% con `r format(inc_prod3,decimal.mark=",", nsmall = 1)` pp., acumulando `r format(acu_prod3,decimal.mark=",", nsmall = 1)`% en lo que va del año y `r format(doc_prod3,decimal.mark=",", nsmall = 1)`% a doce meses.
 
-+ `r firstup(tolower(prod4))`
+-   `r firstup(tolower(prod4))`
 
 Consignó un `r ll_prod4` mensual de `r format(var_prod4,decimal.mark=",", nsmall = 1)`%, con `r format(inc_prod4,decimal.mark=",", nsmall = 3)` pp., acumulando `r format(acu_prod4,decimal.mark=",", nsmall = 1)`% en lo que va del año y `r format(doc_prod4,decimal.mark=",", nsmall = 1)`% a doce meses.
 
-+ `r firstup(tolower(prod5))`
+-   `r firstup(tolower(prod5))`
 
 Consigno un `r ll_prod5` mensual de `r format(var_prod5,decimal.mark=",", nsmall = 1)`%, con una incidencia de `r format(inc_prod5,decimal.mark=",", nsmall = 1)` pp., registrando una variación de `r format(acu_prod5,decimal.mark=",", nsmall = 1)`% en lo que va del año y de `r format(doc_prod5,decimal.mark=",", nsmall = 1)`% a doce meses
 
-+ `r firstup(tolower(prod6))`
+-   `r firstup(tolower(prod6))`
 
 Registró una `r ll_prod6` mensual de `r format(var_prod6)`%, con `r format(inc_prod6,decimal.mark=",", nsmall = 1)` pp., acumulando `r format(acu_prod6,decimal.mark=",", nsmall = 1)`% en lo que va del año y `r format(doc_prod6,decimal.mark=",", nsmall = 1)`% a doce meses.
 
@@ -542,7 +530,7 @@ a<-paste0("graficos/w_ipc.png")
 knitr::include_graphics(a)
 ```
 
-# Expectativas de inflación en las encuestas (*)
+# Expectativas de inflación en las encuestas (\*)
 
 ```{r echo=FALSE, results=FALSE, message=FALSE, warning=FALSE}
 # Encuesta de Expectativas Económicas
@@ -629,8 +617,7 @@ a<-paste0("graficos/eee_eof.png")
 knitr::include_graphics(a)
 ```
 
-(*) En el caso de la EOF, considera la encuesta de la primera quincena de cada mes hasta enero del 2018. Desde febrero de ese 
-año, considera la última encuesta publicada en el mes, incluyendo la previa a la Reunión de Política Monetaria de diciembre 2021. En los meses en los que no se publica encuesta, se considera la última encuesta disponible. En el caso de la EEE, considera la encuesta publicada en diciembre de 2021.
+(\*) En el caso de la EOF, considera la encuesta de la primera quincena de cada mes hasta enero del 2018. Desde febrero de ese año, considera la última encuesta publicada en el mes, incluyendo la previa a la Reunión de Política Monetaria de diciembre 2021. En los meses en los que no se publica encuesta, se considera la última encuesta disponible. En el caso de la EEE, considera la encuesta publicada en diciembre de 2021.
 
 ```{r echo=FALSE, results=FALSE, message=FALSE, warning=FALSE}
 q <- ipc_tpm_long %>% 
