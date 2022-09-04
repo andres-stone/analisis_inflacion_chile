@@ -1,9 +1,0 @@
-"0","# Tasa de Politica Monetaria Mensual
-tpm <- read_excel(paste0(""datos/"",tpm)) %>%
-  janitor::clean_names()
-"
-"2","New names:
-* `` -> ...2
-* `` -> ...3
-* `` -> ...4
-"
